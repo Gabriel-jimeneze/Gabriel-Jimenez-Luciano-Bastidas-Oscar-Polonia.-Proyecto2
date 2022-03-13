@@ -19,11 +19,11 @@ llav_data_2018=data_2018.keys()
 llav_Estad_educacion=Estad_educacion.keys()
 
 #Correccion años
-ii_estad_2018=Estad_educacion[llav_Estad_educacion[0]]==2018
-Estad_educacion=Estad_educacion[ii_estad_2018]
+
+
 #ordenar datos a semejanza data
-long_o=len(data_2014[::1])
-long=len(Estad_educacion[::1])
+data_2014=data_2014.sort_values(by=llav_data_2014[0])
+
 
             
         
