@@ -21,13 +21,35 @@ llav_Estad_educacion=Estad_educacion.keys()
 #Correccion años
 ii_estad_2018=Estad_educacion[llav_Estad_educacion[0]]==2018
 Estad_educacion=Estad_educacion[ii_estad_2018]
+#ordenar datos a semejanza data
+long_o=len(data_2014[::1])
+long=len(Estad_educacion[::1])
+
+            
+        
+
+def shuffle(lista_a,lista_b,nombre):
+    diferencia=np.mean(lista_a)-np.mean(lista_b)
+    N_interracciones=10000
+    lista_grande=list(lista_a)+list(lista_b)
+    diferencias=np.zeros(N_interracciones)
+    for i in range(N_interracciones):
+        np.random.shuffle(lista_grande)
+        lista_a1=lista_grande[:len(lista_a)]
+        lista_b1=lista_grande[len(lista_a):]
+        diferencias[i]=np.mean(lista_a1)-np.mean(lista_b1)
+    p_value=2*(np.count_nonzero(diferencias>diferencia)/len(diferencias))
+    plt.figure()
+    plt.title("{} y P_value de {}".format(nombre,p_value))
+    plt.hist(diferencias, bins=40, density="true")
+    plt.vlines(diferencia,0,4,color="red")
+    
+
+    
 
 
 
 
 
-#filtrado datos
 
-def organizacion(data1,data2):
-    len(data1[::1])
     
