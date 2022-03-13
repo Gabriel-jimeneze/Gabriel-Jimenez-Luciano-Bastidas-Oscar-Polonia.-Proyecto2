@@ -10,13 +10,20 @@ import pandas as pd
 #Datos
 data_2014=pd.read_csv("Camara 2014.csv", delimiter=";",encoding="ISO-8859-1")
 data_2018=pd.read_csv("Camara 2018.csv", delimiter=";")
-
+#Variable 1
 Estad_educacion=pd.read_csv("MEN_ESTADISTICAS_EN_EDUCACION_EN_PREESCOLAR__B_SICA_Y_MEDIA_POR_DEPARTAMENTO.csv", delimiter=",",decimal=".")
+
+#Variable 2
+Estad_internet=pd.read_csv("Internet_Fijo_Penetraci_n_Departamentos.csv", delimiter=";",decimal=".")
+
+#Variable 3
+
 
 #Llaves
 llav_data_2014=data_2014.keys()
 llav_data_2018=data_2018.keys()
 llav_Estad_educacion=Estad_educacion.keys()
+llav_Estad_internet=Estad_internet.keys()
 
 #Correccion años
 ii_estad_2018=Estad_educacion[llav_Estad_educacion[0]]==2018
@@ -25,6 +32,7 @@ Estad_educacion=Estad_educacion[ii_estad_2018].sort_values(by=llav_Estad_educaci
 
 #ordenar datos a semejanza data
 data_2014=data_2014.sort_values(by=llav_data_2014[0])
+Estad_internet=Estad_internet.sort_values(by=llav_Estad_internet[1])
 
 
             
