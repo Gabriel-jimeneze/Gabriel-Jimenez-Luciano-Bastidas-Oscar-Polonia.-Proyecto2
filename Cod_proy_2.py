@@ -55,6 +55,24 @@ plt.tight_layout()
 ax.set_box_aspect([1,1,1])
 fig.colorbar(p, shrink=1, aspect=10,ax=ax)
 
+def model(x, betas):
+    y = betas[0]
+    for i in range(1,len(betas)):
+        y += betas[i]*x[i-1]
+    return y
+
+def loglike(x_obs, y_obs, sigma_y_obs, betas):
+    n_obs = len(y_obs)
+    l = 0.0
+    for i in range(n_obs):
+        l += -0.5 * (y_obs[i] - model(x_obs[i,:], betas))**2/sigma_y_obs[i]**2
+    return l
+
+
+
+n_iteraciones = 10000
+betas = np.zeros([n_iteraciones,5])
+
 def shuffle(lista_a,lista_b,nombre):
     diferencia=np.mean(lista_a)-np.mean(lista_b)
     N_interracciones=10000
@@ -70,7 +88,9 @@ def shuffle(lista_a,lista_b,nombre):
     plt.title("{} y P_value de {}".format(nombre,p_value))
     plt.hist(diferencias, bins=40, density="true")
     plt.vlines(diferencia,0,4,color="red")
-        
+
+
+    
 
 
 
