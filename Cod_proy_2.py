@@ -18,7 +18,7 @@ Estad_educacion=pd.read_csv("MEN_ESTADISTICAS_EN_EDUCACION_EN_PREESCOLAR__B_SICA
 Estad_internet=pd.read_csv("Internet_Fijo_Penetraci_n_Departamentos.csv", delimiter=";",decimal=",")
 
 #Variable 3
-Estad_pobreza=pd.read_csv("Ind_Pob_Mult.csv", delimiter=";",decimal=",",encoding="ISO-8859-1")
+Estad_pobreza=pd.read_csv("Ind_Pob_Mult.csv", delimiter=";",decimal=".",encoding="ISO-8859-1")
 
 #Llaves
 llav_data_2014=data_2014.keys()
@@ -36,17 +36,24 @@ data_2014=data_2014.sort_values(by=llav_data_2014[0])
 Estad_internet=Estad_internet.sort_values(by=llav_Estad_internet[1])
 Estad_pobreza=Estad_pobreza.sort_values(by=llav_Estad_pobreza[0])
 
-zs=data_2014[llav_data_2014[2]]
-ys=Estad_educacion[llav_Estad_educacion[4]]
+zs=Estad_pobreza[llav_Estad_pobreza[2]]
+ys=Estad_educacion[llav_Estad_educacion[4]]/100
 xs=Estad_internet[llav_Estad_internet[2]]
+#los votos en blanco estan en miles
+col=(data_2014[llav_data_2014[2]]/1000)
 
-fig = plt.figure(figsize=(4,4))
+
+fig = plt.figure()
 ax = fig.add_subplot(111, projection ="3d")
 
-p= ax.scatter(xs,ys,c=zs)
-plt.xlabel("Internet")
-plt.ylabel("Educacion")
-fig.colorbar(p)
+p= ax.scatter(xs,ys,zs,c=col)
+ax.set_xlabel("Internet")
+ax.set_ylabel("Educacion")
+ax.set_zlabel('Pobreza')
+plt.tight_layout()
+ax.set_box_aspect([1,1,1])
+fig.colorbar(p, shrink=0.5, aspect=4,ax=ax)
+
 def shuffle(lista_a,lista_b,nombre):
     diferencia=np.mean(lista_a)-np.mean(lista_b)
     N_interracciones=10000
