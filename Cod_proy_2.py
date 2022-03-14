@@ -70,9 +70,7 @@ def shuffle(lista_a,lista_b,nombre):
     plt.title("{} y P_value de {}".format(nombre,p_value))
     plt.hist(diferencias, bins=40, density="true")
     plt.vlines(diferencia,0,4,color="red")
-    
-
-    
+        
 
 
 
