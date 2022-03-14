@@ -32,6 +32,7 @@ ii_estad_2018=Estad_educacion[llav_Estad_educacion[0]]==2018
 Estad_educacion=Estad_educacion[ii_estad_2018].sort_values(by=llav_Estad_educacion[2])
 
 #ordenar datos a semejanza data
+data_2018=data_2018.sort_values(by=llav_data_2018[0])
 data_2014=data_2014.sort_values(by=llav_data_2014[0])
 Estad_internet=Estad_internet.sort_values(by=llav_Estad_internet[1])
 Estad_pobreza=Estad_pobreza.sort_values(by=llav_Estad_pobreza[0])
@@ -40,19 +41,19 @@ zs=Estad_pobreza[llav_Estad_pobreza[2]]
 ys=Estad_educacion[llav_Estad_educacion[4]]/100
 xs=Estad_internet[llav_Estad_internet[2]]
 #los votos en blanco estan en miles
-col=(data_2014[llav_data_2014[2]]/1000)
+col=(data_2018[llav_data_2018[2]]/1000)
 
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection ="3d")
 
-p= ax.scatter(xs,ys,zs,c=col)
+p= ax.scatter(xs,ys,zs,c=col, s=200)
 ax.set_xlabel("Internet")
 ax.set_ylabel("Educacion")
 ax.set_zlabel('Pobreza')
 plt.tight_layout()
 ax.set_box_aspect([1,1,1])
-fig.colorbar(p, shrink=0.5, aspect=4,ax=ax)
+fig.colorbar(p, shrink=1, aspect=10,ax=ax)
 
 def shuffle(lista_a,lista_b,nombre):
     diferencia=np.mean(lista_a)-np.mean(lista_b)
