@@ -38,40 +38,29 @@ Estad_internet=Estad_internet.sort_values(by=llav_Estad_internet[1])
 Estad_pobreza=Estad_pobreza.sort_values(by=llav_Estad_pobreza[0])
 
 zs=Estad_pobreza[llav_Estad_pobreza[2]]
-ys=Estad_educacion[llav_Estad_educacion[4]]/100
+ys=Estad_educacion[llav_Estad_educacion[9]]/100
 xs=Estad_internet[llav_Estad_internet[2]]
 #los votos en blanco estan en miles
-col=(data_2018[llav_data_2018[2]]/1000)
+col=(data_2018[llav_data_2018[2]]/data_2018[llav_data_2018[1]])
 
 
 fig = plt.figure()
-ax = fig.add_subplot(111, projection ="3d")
+plt.scatter(zs,col)
+# ax = fig.add_subplot(111, projection ="3d")
 
-p= ax.scatter(xs,ys,zs,c=col, s=200)
-ax.set_xlabel("Internet")
-ax.set_ylabel("Educacion")
-ax.set_zlabel('Pobreza')
-plt.tight_layout()
-ax.set_box_aspect([1,1,1])
-fig.colorbar(p, shrink=1, aspect=10,ax=ax)
-
-def model(x, betas):
-    y = betas[0]
-    for i in range(1,len(betas)):
-        y += betas[i]*x[i-1]
-    return y
-
-def loglike(x_obs, y_obs, sigma_y_obs, betas):
-    n_obs = len(y_obs)
-    l = 0.0
-    for i in range(n_obs):
-        l += -0.5 * (y_obs[i] - model(x_obs[i,:], betas))**2/sigma_y_obs[i]**2
-    return l
-
-
+# p= ax.scatter(xs,ys,zs,c=col, s=200)
+# ax.set_xlabel("Internet")
+# ax.set_ylabel("Educacion")
+# ax.set_zlabel('Pobreza')
+# plt.tight_layout()
+# ax.set_box_aspect([1,1,1])
+# fig.colorbar(p, shrink=1, aspect=10,ax=ax)
 
 n_iteraciones = 10000
 betas = np.zeros([n_iteraciones,5])
+
+
+
 
 def shuffle(lista_a,lista_b,nombre):
     diferencia=np.mean(lista_a)-np.mean(lista_b)
@@ -90,7 +79,9 @@ def shuffle(lista_a,lista_b,nombre):
     plt.vlines(diferencia,0,4,color="red")
 
 
-    
+
+
+print(col)
 
 
 
