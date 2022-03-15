@@ -37,11 +37,11 @@ data_2014=data_2014.sort_values(by=llav_data_2014[0])
 Estad_internet=Estad_internet.sort_values(by=llav_Estad_internet[1])
 Estad_pobreza=Estad_pobreza.sort_values(by=llav_Estad_pobreza[0])
 
-zs=Estad_pobreza[llav_Estad_pobreza[2]]
-ys=Estad_educacion[llav_Estad_educacion[9]]/100
-xs=Estad_internet[llav_Estad_internet[2]]
+zs=np.array(Estad_pobreza[llav_Estad_pobreza[2]])
+ys=np.array(Estad_educacion[llav_Estad_educacion[9]]/100)
+xs=np.array(Estad_internet[llav_Estad_internet[2]])
 #los votos en blanco estan en miles
-col=(data_2018[llav_data_2018[2]]/data_2018[llav_data_2018[1]])
+col=np.array((data_2018[llav_data_2018[2]]/data_2018[llav_data_2018[1]]))
 
 
 
@@ -79,21 +79,21 @@ def shuffle(lista_a,lista_b,nombre):
 
 
 
-def modelo(x,betas):
-    y= betas[0]
+def model(x, betas):
+    y = betas[0]
     for i in range(1,len(betas)):
-        y+= betas[i]*x[i-1]
-        
+        y += betas[i]*x[i-1]
     return y
 
-def loglike(xobser,yobser,sigma_yobser, betas):
-    n_obser=len(yobser)
-    l=0
-    for i in range(n_obser):
-        l += -0.5* (yobser[i]-modelo(xobser[i,:],betas))*2/sigma_yobser[i]*2
+def loglike(x_obs, y_obs, sigma_y_obs, betas):
+    n_obs = len(y_obs)
+    l = 0.0
+    for i in range(n_obs):
+        l += -0.5 * (y_obs[i] - model(x_obs[i,:], betas))**2/sigma_y_obs[i]**2
     return l
 
 xobser=np.empty((33,3))
+x_obs=xobser
 for j in range(3):
     for i in range(len(xobser)):
         if j==0:
@@ -102,30 +102,31 @@ for j in range(3):
              xobser[i,j]=ys[i]
         if j==2:
              xobser[i,j]=zs[i]
-             
-sigma_yobser=np.ones(len(col))*0.01
-y_obser=np.array(col)
-n_interacciones=10000
-betas=np.zeros([n_interacciones,3])
 
-for i in range(1, n_interacciones):
-    betas_now= betas[i-1,:]
-    betas_nex=betas_now+np.random.normal(scale=0.01,size=3)
-    loglike_now=loglike(xobser,y_obser,sigma_yobser,betas_now)
-    loglike_nex=loglike(xobser,y_obser,sigma_yobser,betas_nex)
+y_obs=col
+sigma_y_obs = np.ones(len(y_obs))*0.01
+
+n_iteraciones = 10000
+betas = np.zeros([n_iteraciones,4])
+for i in range(1,n_iteraciones):
+    betas_now = betas[i-1,:]
+    betas_next = betas_now + np.random.normal(scale=0.01, size=4)
     
-    gamma=np.min([np.exp(loglike_nex-loglike_now),1.0])
-    alpha=np.random.random()
+    loglike_now = loglike(x_obs, y_obs, sigma_y_obs, betas_now)
+    loglike_next = loglike(x_obs, y_obs, sigma_y_obs, betas_next)
+    
+    gamma = np.min([np.exp(loglike_next-loglike_now),1.0])
+    alpha = np.random.random()
+    
     if alpha < gamma:
-        betas[i,:]=betas_nex
+        betas[i,:] = betas_next
     else:
-        betas[i,:]=betas_now
-plt.hist(betas[:,0])
-for i in range(3):
+        betas[i,:] = betas_now
+plt.figure()
+plt.scatter(zs,col)
+
+for i in range(4):
     print('beta {}: {:.2f}+/-{:.2f}'.format(i, np.mean(betas[:,i]), np.std(betas[:,i])))
-
-
-
 
 
 
