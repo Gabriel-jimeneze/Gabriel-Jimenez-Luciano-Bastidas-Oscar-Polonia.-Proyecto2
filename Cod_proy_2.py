@@ -44,8 +44,7 @@ xs=Estad_internet[llav_Estad_internet[2]]
 col=(data_2018[llav_data_2018[2]]/data_2018[llav_data_2018[1]])
 
 
-fig = plt.figure()
-plt.scatter(zs,col)
+
 # ax = fig.add_subplot(111, projection ="3d")
 
 # p= ax.scatter(xs,ys,zs,c=col, s=200)
@@ -80,8 +79,53 @@ def shuffle(lista_a,lista_b,nombre):
 
 
 
+def modelo(x,betas):
+    y= betas[0]
+    for i in range(1,len(betas)):
+        y+= betas[i]*x[i-1]
+        
+    return y
 
-print(col)
+def loglike(xobser,yobser,sigma_yobser, betas):
+    n_obser=len(yobser)
+    l=0
+    for i in range(n_obser):
+        l += -0.5* (yobser[i]-modelo(xobser[i,:],betas))*2/sigma_yobser[i]*2
+    return l
+
+xobser=np.empty((33,3))
+for j in range(3):
+    for i in range(len(xobser)):
+        if j==0:
+            xobser[i,j]=xs[i]
+        if j==1:    
+             xobser[i,j]=ys[i]
+        if j==2:
+             xobser[i,j]=zs[i]
+             
+sigma_yobser=np.ones(len(col))*0.01
+y_obser=np.array(col)
+n_interacciones=10000
+betas=np.zeros([n_interacciones,3])
+
+for i in range(1, n_interacciones):
+    betas_now= betas[i-1,:]
+    betas_nex=betas_now+np.random.normal(scale=0.01,size=3)
+    loglike_now=loglike(xobser,y_obser,sigma_yobser,betas_now)
+    loglike_nex=loglike(xobser,y_obser,sigma_yobser,betas_nex)
+    
+    gamma=np.min([np.exp(loglike_nex-loglike_now),1.0])
+    alpha=np.random.random()
+    if alpha < gamma:
+        betas[i,:]=betas_nex
+    else:
+        betas[i,:]=betas_now
+plt.hist(betas[:,0])
+for i in range(3):
+    print('beta {}: {:.2f}+/-{:.2f}'.format(i, np.mean(betas[:,i]), np.std(betas[:,i])))
+
+
+
 
 
 
