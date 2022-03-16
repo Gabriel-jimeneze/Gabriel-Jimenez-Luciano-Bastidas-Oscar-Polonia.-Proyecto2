@@ -40,7 +40,7 @@ Estad_internet=Estad_internet.sort_values(by=llav_Estad_internet[1])
 Estad_pobreza=Estad_pobreza.sort_values(by=llav_Estad_pobreza[0])
 
 zs=np.array(Estad_pobreza[llav_Estad_pobreza[2]])
-ys=(Estad_educacion[llav_Estad_educacion[4]]/100)
+ys=np.array((Estad_educacion[llav_Estad_educacion[9]]/100))
 xs=np.array(Estad_internet[llav_Estad_internet[2]])
 #los votos en blanco estan en miles
 col=(data_2018[llav_data_2018[2]]/data_2018[llav_data_2018[1]])
@@ -70,7 +70,7 @@ for j in range(3):
         if j==2:
              xobser[i,j]=zs[i]
              
-sigma_yobser=np.ones(len(col))*0.05
+sigma_yobser=np.ones(len(col))*0.01
 y_obser=np.array(col)
 n_interacciones=10000
 betas=np.zeros([n_interacciones,4])
@@ -110,22 +110,22 @@ plt.figure()
 plt.plot(xs,betas_y*(ys)+betas_inter)
 plt.scatter(ys,col)
 plt.plot(xs,betas_z*(zs)+betas_inter)
-plt.figure()
-plt.scatter(zs,col)
 
 
-def shuffle(lista_a,lista_b,nombre):
-    diferencia=np.mean(lista_a)-np.mean(lista_b)
-    N_interracciones=10000
-    lista_grande=list(lista_a)+list(lista_b)
-    diferencias=np.zeros(N_interracciones)
-    for i in range(N_interracciones):
-        np.random.shuffle(lista_grande)
-        lista_a1=lista_grande[:len(lista_a)]
-        lista_b1=lista_grande[len(lista_a):]
-        diferencias[i]=np.mean(lista_a1)-np.mean(lista_b1)
-    p_value=2*(np.count_nonzero(diferencias>diferencia)/len(diferencias))
-    plt.figure()
-    plt.title("{} y P_value de {}".format(nombre,p_value))
-    plt.hist(diferencias, bins=40, density="true")
-    plt.vlines(diferencia,0,4,color="red")
+
+
+# def shuffle(lista_a,lista_b,nombre):
+#     diferencia=np.mean(lista_a)-np.mean(lista_b)
+#     N_interracciones=10000
+#     lista_grande=list(lista_a)+list(lista_b)
+#     diferencias=np.zeros(N_interracciones)
+#     for i in range(N_interracciones):
+#         np.random.shuffle(lista_grande)
+#         lista_a1=lista_grande[:len(lista_a)]
+#         lista_b1=lista_grande[len(lista_a):]
+#         diferencias[i]=np.mean(lista_a1)-np.mean(lista_b1)
+#     p_value=2*(np.count_nonzero(diferencias>diferencia)/len(diferencias))
+#     plt.figure()
+#     plt.title("{} y P_value de {}".format(nombre,p_value))
+#     plt.hist(diferencias, bins=40, density="true")
+#     plt.vlines(diferencia,0,4,color="red")

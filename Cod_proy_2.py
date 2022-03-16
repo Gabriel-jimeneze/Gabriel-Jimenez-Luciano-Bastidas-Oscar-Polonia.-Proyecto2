@@ -6,10 +6,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-
 #Datos
 data_2014=pd.read_csv("Camara 2014.csv", delimiter=";",encoding="ISO-8859-1")
 data_2018=pd.read_csv("Camara 2018.csv", delimiter=";")
+data_2020=pd.read_csv("Camara 2022.csv", delimiter=";",encoding="ISO-8859-1")
 
 #Variable 1
 Estad_educacion=pd.read_csv("MEN_ESTADISTICAS_EN_EDUCACION_EN_PREESCOLAR__B_SICA_Y_MEDIA_POR_DEPARTAMENTO.csv", delimiter=",",decimal=".")
@@ -23,9 +23,13 @@ Estad_pobreza=pd.read_csv("Ind_Pob_Mult.csv", delimiter=";",decimal=".",encoding
 #Llaves
 llav_data_2014=data_2014.keys()
 llav_data_2018=data_2018.keys()
+llav_data_2020=data_2020.keys()
 llav_Estad_educacion=Estad_educacion.keys()
 llav_Estad_internet=Estad_internet.keys()
 llav_Estad_pobreza=Estad_pobreza.keys()
+
+ii_estad_2020=Estad_educacion[llav_Estad_educacion[0]]==2020
+Estad_educacion_2020=Estad_educacion[ii_estad_2020].sort_values(by=llav_Estad_educacion[2])
 
 #Correccion años
 ii_estad_2018=Estad_educacion[llav_Estad_educacion[0]]==2018
@@ -34,6 +38,7 @@ Estad_educacion=Estad_educacion[ii_estad_2018].sort_values(by=llav_Estad_educaci
 #ordenar datos a semejanza data
 data_2018=data_2018.sort_values(by=llav_data_2018[0])
 data_2014=data_2014.sort_values(by=llav_data_2014[0])
+data_2020=data_2020.sort_values(by=llav_data_2020[0])
 Estad_internet=Estad_internet.sort_values(by=llav_Estad_internet[1])
 Estad_pobreza=Estad_pobreza.sort_values(by=llav_Estad_pobreza[0])
 
@@ -45,15 +50,6 @@ col=np.array((data_2018[llav_data_2018[2]]/data_2018[llav_data_2018[1]]))
 
 
 
-# ax = fig.add_subplot(111, projection ="3d")
-
-# p= ax.scatter(xs,ys,zs,c=col, s=200)
-# ax.set_xlabel("Internet")
-# ax.set_ylabel("Educacion")
-# ax.set_zlabel('Pobreza')
-# plt.tight_layout()
-# ax.set_box_aspect([1,1,1])
-# fig.colorbar(p, shrink=1, aspect=10,ax=ax)
 
 n_iteraciones = 10000
 betas = np.zeros([n_iteraciones,5])
@@ -122,15 +118,90 @@ for i in range(1,n_iteraciones):
         betas[i,:] = betas_next
     else:
         betas[i,:] = betas_now
-plt.figure()
-plt.scatter(zs,col)
+
 
 for i in range(4):
     print('beta {}: {:.2f}+/-{:.2f}'.format(i, np.mean(betas[:,i]), np.std(betas[:,i])))
+betas_x=np.mean(betas[:,1])
+betas_y=np.mean(betas[:,2])
+betas_z=np.mean(betas[:,3])
+betas_inter=np.mean(betas[:,0])
 
 
+#Gráfica relación todos
+fig=plt.figure()
+ax = fig.add_subplot(111, projection ="3d")
+
+p= ax.scatter(xs,ys,zs,c=col, s=200)
+ax.set_xlabel("Internet")
+ax.set_ylabel("Educacion")
+ax.set_zlabel('Pobreza')
+plt.tight_layout()
+ax.set_box_aspect([1,1,1])
 
 
+c=fig.colorbar(p, shrink=1, aspect=10,ax=ax)
+c.set_label("Votos en blanco")
+ax.view_init(40,115)
 
+#Gráfica c/u
+plt.figure()
+plt.scatter(zs,col,label="Datos originales")
+plt.scatter(zs,betas_x*xs+betas_y*ys+betas_z*zs+betas_inter, label="Comportamiento ajuste")
+plt.xlabel("Pobreza")
+plt.ylabel("Votos en blanco")
+plt.legend()
+
+plt.figure()
+plt.scatter(xs,col,label="Datos originales")
+plt.scatter(xs,betas_x*xs+betas_y*ys+betas_z*zs+betas_inter, label="Comportamiento ajuste")
+plt.xlabel("Internet")
+plt.ylabel("Votos en blanco")
+plt.legend()
+
+plt.figure()
+plt.scatter(ys,col,label="Datos originales")
+plt.scatter(ys,betas_x*xs+betas_y*ys+betas_z*zs+betas_inter, label="Comportamiento ajuste")
+plt.xlabel("Educación")
+plt.ylabel("Votos en blanco")
+plt.legend()
+
+zs_new=np.array(Estad_pobreza[llav_Estad_pobreza[4]])
+ys_new=np.array(Estad_educacion_2020[llav_Estad_educacion[9]]/100)
+xs_new=np.array(Estad_internet[llav_Estad_internet[3]])
+
+for i in range(32):
+    print("{}- prediccion: {:.3f} real {:.3f}".format(Estad_pobreza[llav_Estad_pobreza[0]][i],betas_x*xs_new[i]+betas_y*ys_new[i]+betas_z*zs_new[i]+betas_inter,data_2020[llav_data_2020[2]][i]/data_2020[llav_data_2020[1]][i]))
+
+
+#Gráfica relación todos prediccion
+fig=plt.figure()
+ax = fig.add_subplot(111, projection ="3d")
+
+p= ax.scatter(xs_new,ys_new,zs_new,c=betas_x*xs+betas_y*ys+betas_z*zs+betas_inter, s=200)
+ax.set_xlabel("Internet")
+ax.set_ylabel("Educacion")
+ax.set_zlabel('Pobreza')
+plt.tight_layout()
+ax.set_box_aspect([1,1,1])
+
+c=fig.colorbar(p, shrink=1, aspect=10,ax=ax)
+c.set_label("Votos en blanco")
+ax.view_init(40,115)
+
+#Gráfica relación todos real
+fig=plt.figure()
+ax = fig.add_subplot(111, projection ="3d")
+
+p= ax.scatter(xs_new,ys_new,zs_new,c=data_2020[llav_data_2020[2]]/data_2020[llav_data_2020[1]], s=200)
+ax.set_xlabel("Internet")
+ax.set_ylabel("Educacion")
+ax.set_zlabel('Pobreza')
+plt.tight_layout()
+ax.set_box_aspect([1,1,1])
+
+c=fig.colorbar(p, shrink=1, aspect=10,ax=ax)
+c.set_label("Votos en blanco")
+ax.view_init(40,115)
 
     
